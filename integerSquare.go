@@ -2,71 +2,85 @@ package main
 
 import (
 	"fmt"
+	"strings"
 	"strconv"
+	"bufio"
+	"os"
 )
 
 func main() {
-	var s string
-	fmt.Println("Choose the number of test cases, it has to be an integer 1<=i<=100: ")
-	fmt.Scanln(&s)
-	if b, i := controluserinput(s); b {
-		if i >= 1 && i <= 100 {
-			looptestcase(i)
+	var nbrtestcase int = 0
+	// fmt.Println("Choose the number of test cases, it has to be an integer 1<=i<=100:")
+	fmt.Scanln(&nbrtestcase)
+	var resultats []int
+	if nbrtestcase >= 1 && nbrtestcase <= 100 {
+		resultats = looptestcase(nbrtestcase, resultats)
+	} else {
+		fmt.Println("nbrtestcase not between 1 and 100")
+	}
+	displayresults(resultats, len(resultats))
+}
+
+func looptestcase(nbrloop int, arrayofresults []int) []int {
+	if nbrloop > 0 {
+		// fmt.Println("test case number: ", nbrloop, ". Choose the number of integers you want 0<i<=100:")
+		var nbrintegers int = 0
+		fmt.Scanln(&nbrintegers)
+		if nbrintegers > 0 && nbrintegers <= 100 {
+			// fmt.Println("You'll have to enter ", nbrintegers, " integers, space separated:")
+			reader := bufio.NewReader(os.Stdin)
+			userintegersstring, _ := reader.ReadString('\n')
+			userintegersstring = strings.ReplaceAll(userintegersstring, "\r", "")
+			userintegersstring = strings.ReplaceAll(userintegersstring, "\n", "")
+			arrayofstring := strings.Split(userintegersstring, " ")
+			if nbrintegers > len(arrayofstring) {
+				nbrintegers = len(arrayofstring)
+			}
+			var arrayofint []int
+			arrayofint = arraystringtoint(nbrintegers, arrayofstring, arrayofint)
+			var result int = 0
+			arrayofresults = append(arrayofresults, sumofintegers(arrayofint, nbrintegers, result))
+			return looptestcase(nbrloop-1, arrayofresults)
 		} else {
-			fmt.Println("It has to be between 1 and 100.")
+			fmt.Println("nbrintegers not between 0 and 100")
 		}
-	} else {
-		fmt.Println("It wasn't an integer.")
 	}
+	return arrayofresults
 }
 
-func controluserinput(uinput string) (bool, int) {
-	if i, err := strconv.Atoi(uinput); err == nil {
-		return true, i
-	} else {
-		return false, i
-	}
-}
-
-func looptestcase(n int) {
-	var s string
-	if n > 0 {
-		fmt.Println("Choose the number of integers you want 1<=i<=100: ")
-		fmt.Scanln(&s)
-		if b, i := controluserinput(s); b {
-			if i >= 1 && i <= 100 {
-				n--
-				fmt.Println("You'll have to enter ", i, " integers: ")
-				loopsquare(i, 0)
+func arraystringtoint(nbrloop int, arrayofstring []string, arrayofint []int) []int {
+	if nbrloop > 0 {
+		index := len(arrayofstring)-nbrloop
+		if arrayofstring[index] != "" {
+			intVal, err := strconv.Atoi(arrayofstring[index])
+			if err != nil {
+				fmt.Printf("Error converting string '%s' to integer: %v\n", arrayofstring[nbrloop], err)
+				arrayofint = append(arrayofint, 0)
 			} else {
-				fmt.Println("It has to be between 1 and 100.")
+				arrayofint = append(arrayofint, intVal)
 			}
 		} else {
-			fmt.Println("It wasn't an integer.")
+			arrayofint = append(arrayofint, 0)
 		}
-		looptestcase(n)
+		return arraystringtoint(nbrloop-1, arrayofstring, arrayofint)
 	}
+	return arrayofint
 }
 
-func loopsquare(n int, sum int) {
-	var s string
-	if n > 0 {
-		fmt.Println("Enter an integer -100<=i<=100: ")
-		fmt.Scanln(&s)
-		if b, i := controluserinput(s); b {
-			if i >= -100 && i <= 100 {
-				n--
-				if i > 0 {
-					sum = sum + i*i
-				}
-			} else {
-				fmt.Println("It has to be between -100 and 100.")
-			}
-		} else {
-			fmt.Println("It wasn't an integer.")
+func sumofintegers(arrayofintegers []int, nbrloop int, result int) int {
+	if nbrloop > 0 {
+		index := len(arrayofintegers)-nbrloop
+		if arrayofintegers[index] > 0 {
+			result += arrayofintegers[index] * arrayofintegers[index]
 		}
-		loopsquare(n, sum)
-	} else {
-		fmt.Println("The sum of square root of all your integers excluding negatives is: ", sum)
+		return sumofintegers(arrayofintegers, nbrloop-1, result)
 	}
+	return result
 }
+func displayresults(arrayofresults []int, nbrloop int) {
+	if nbrloop > 0 {
+		index := len(arrayofresults)-nbrloop
+		fmt.Println(arrayofresults[index])
+		displayresults(arrayofresults, nbrloop-1)
+	}
+ }
