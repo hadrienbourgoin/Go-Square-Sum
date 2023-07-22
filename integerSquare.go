@@ -42,7 +42,7 @@ func looptestcase(nbrloop int, arrayofresults []int) []int {
 			arrayofresults = append(arrayofresults, sumofintegers(arrayofint, nbrintegers, result))
 			return looptestcase(nbrloop-1, arrayofresults)
 		} else {
-			fmt.Println("nbrintegers not between 0 and 100")
+			fmt.Println("nbrintegers not between 1 and 100")
 		}
 	}
 	return arrayofresults
@@ -57,7 +57,11 @@ func arraystringtoint(nbrloop int, arrayofstring []string, arrayofint []int) []i
 				fmt.Printf("Error converting string '%s' to integer: %v\n", arrayofstring[nbrloop], err)
 				arrayofint = append(arrayofint, 0)
 			} else {
-				arrayofint = append(arrayofint, intVal)
+				if intVal > 100 {
+					arrayofint = append(arrayofint, 0)
+				} else {
+					arrayofint = append(arrayofint, intVal)
+				}
 			}
 		} else {
 			arrayofint = append(arrayofint, 0)
